@@ -5,6 +5,8 @@ import torch
 from torch import nn, optim
 import numpy as np
 
+import argparse
+
 BATCH_SIZE = 16
 
 # Neural network for agent
@@ -106,9 +108,28 @@ def train(env, agent, batch_size):
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('command', choices=['train', 'run'], help='run to run the trained the model, train to train the model')
+    args = parser.parse_args()
     env = gym.make("CartPole-v0")
     obs_size = env.observation_space.shape[0]
     n_act = env.action_space.n
-
     agent = Agent(obs_size, n_act)
-    train(env, agent, BATCH_SIZE)
+
+    if args.command == 'train':
+        train(env, agent, BATCH_SIZE)
+    elif args.command == 'run':
+        agent.load_state_dict(torch.load("cartpole_solver.pt"))
+        is_done = False
+        total_reward = 0.0
+        with torch.no_grad():
+            obs = env.reset()
+            sm = nn.Softmax()
+            for _ in range(1000):
+                obs_tens = torch.FloatTensor(obs)
+                act_probs = sm(agent(obs_tens))
+                act = int(torch.argmax(act_probs))
+                env.render()
+                obs, reward, is_done, _ = env.step(act)
+                
+    env.close()
