@@ -2,6 +2,9 @@
 import collections
 import gym
 import tensorboardX
+import os
+import time
+
 ENV_NAME = "FrozenLake-v1"
 GAMMA = 0.9
 TEST_EPISODES = 10
@@ -60,7 +63,9 @@ class Agent():
             state, r, is_done, _ = env.step(a)
             total_reward += r
             if render:
+                os.system("cls" if os.name == 'nt' else 'clear')
                 env.render()
+                time.sleep(0.5)
         return total_reward
     
     def show_matrices(self):
