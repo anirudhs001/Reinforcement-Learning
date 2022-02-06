@@ -1,11 +1,9 @@
 import argparse
-from unicodedata import decimal
 import gym
 import torch
 from torch import nn, optim
 import torch.functional as F
 import numpy as np
-import random
 from tensorboardX import SummaryWriter
 
 ENV = "LunarLander-v2"
